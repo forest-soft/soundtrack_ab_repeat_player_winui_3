@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Soundtrack AB Repeat Player WinUI 3 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Soundtrack AB Repeat Player WinUI 3 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
