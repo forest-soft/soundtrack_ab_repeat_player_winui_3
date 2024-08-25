@@ -64,9 +64,9 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 				{
 					Truck current_truck_data = truck_list[(int)this.current_truck_index];
 
-					
-					
-					if (Convert.ToDouble(current_truck_data.position_b) <= position.TotalSeconds)
+					if (current_truck_data.position_a != "" &&
+						current_truck_data.position_b != "" &&
+						Convert.ToDouble(current_truck_data.position_b) <= position.TotalSeconds)
 					{
 						mediaPlayerElement.MediaPlayer.PlaybackSession.Position = TimeSpan.FromSeconds(Convert.ToDouble(current_truck_data.position_a));
 						// mediaPlayerElement.MediaPlayer.Pause();
@@ -85,10 +85,10 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			truck_list.Add(truck_data);
 
 			truck_data = new Truck();
-			truck_data.filepath = "C:/xxx/14-行く手を阻む者たち.wma";
-			truck_data.name = "14-行く手を阻む者たち.wma";
-			truck_data.position_a = "3.02";
-			truck_data.position_b = "200.19";
+			truck_data.filepath = "C:/xxx/72-でーやもんどへっど (9st_アクション).wma";
+			truck_data.name = "72-でーやもんどへっど (9st_アクション).wma";
+			truck_data.position_a = "52.25";
+			truck_data.position_b = "103.02";
 			truck_data.ab_repeat_num = "";
 			truck_data.is_start_position_a = false;
 			truck_list.Add(truck_data);
@@ -122,7 +122,7 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			}
 		}
 
-		// トラックリストのB2秒前再生ボタンクリック時の処理
+		// トラックリストのB直前再生ボタンクリック時の処理
 		private void truck_position_check_button_Click(object sender, RoutedEventArgs e)
 		{
 			int? truck_index = this.GetTruckListIndex((Button)sender);
@@ -130,12 +130,16 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			{
 				this.current_truck_index = truck_index;
 				Truck current_truck_data = truck_list[(int)this.current_truck_index];
-				this.PlayTruck(Convert.ToDouble(current_truck_data.position_b) - 2);
+
+				// 1秒マイナスすると2秒前くらいから再生される。
+				this.PlayTruck(Convert.ToDouble(current_truck_data.position_b) - 1);
 			}
 		}
 
 		private void PlayTruck(double? position)
 		{
+			// Todo フォーカスを外さずに再生ボタンを押すとA地点、B地点の値が取れない。
+
 			if (this.current_truck_index != null)
 			{
 				// Todo A地点、B地点、A-B間再生回数の入力チェック(フォーカス外したときの方が良いか？)
@@ -143,8 +147,15 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 
 				Truck current_truck_data = truck_list[(int)this.current_truck_index];
 
-				// Todo truck_listのデータに入力値を反映する処理
-				// current_truck_data.position_a = "";
+				// truck_listのデータに入力値を反映させる。
+				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
+
+				TextBox position_a_textbox = (TextBox)this.GetElementByName(list_row_element, "position_a");
+				current_truck_data.position_a = position_a_textbox.Text;
+
+				TextBox position_b_textbox = (TextBox)this.GetElementByName(list_row_element, "position_b");
+				current_truck_data.position_b = position_b_textbox.Text;
+
 
 				mediaPlayerElement.MediaPlayer.Pause();
 
@@ -177,6 +188,34 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 				return this.GetTruckListIndex(parent_element);
 			}
 			return truck_list_view.IndexFromContainer(parent_element);
+		}
+
+		private DependencyObject GetElementByName(DependencyObject element, string name)
+		{
+
+			if (element.GetType().IsSubclassOf(typeof(FrameworkElement)))
+			{
+				object find_element = ((FrameworkElement)element).FindName(name);
+				if (find_element != null)
+				{
+					return (DependencyObject)find_element;
+				}
+			}
+
+			int children_count = VisualTreeHelper.GetChildrenCount(element);
+			for (int i = 0; i < children_count; i++)
+			{
+				DependencyObject child_element = VisualTreeHelper.GetChild(element, i);
+				if (child_element.GetType().IsSubclassOf(typeof(FrameworkElement)))
+				{
+					object find_element = this.GetElementByName(child_element, name);
+					if (find_element != null)
+					{
+						return (DependencyObject)find_element;
+					}
+				}
+			}
+			return null;
 		}
 
 

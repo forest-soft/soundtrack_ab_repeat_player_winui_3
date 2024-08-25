@@ -194,6 +194,7 @@
 								<TextBox
 									x:Name="position_b"
 									Text="{x:Bind position_b}"
+									Tag="position_b"
 								>
 								</TextBox>
 							</StackPanel>
@@ -246,7 +247,7 @@
 									FontFamily="メイリオ"
 									Click="truck_position_check_button_Click"
 								>
-									▶B2秒前
+									▶B直前
 									<Button.Style>
 										<Style TargetType="Button">
 											<Setter Property="Background" Value="White" />
