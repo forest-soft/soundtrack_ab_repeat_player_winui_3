@@ -6,12 +6,27 @@
 	xmlns:local="using:Soundtrack_AB_Repeat_Player_WinUI_3"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	mc:Ignorable="d">
-
+	mc:Ignorable="d"
+	>
 	<Grid>
-		<Border Grid.Row="0" Grid.Column="0" Background="white"/>
-		<Border Grid.Row="0" Grid.Column="1" Background="red"/>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="400"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
 
+		<Border Grid.Row="0" Grid.Column="0" Background="white"/>
+		<Border
+			Grid.Row="0"
+			Grid.Column="1"
+			Background="white"
+			BorderBrush="Black"
+			BorderThickness="3,0,0,0"
+			CornerRadius="0"
+			Padding="0"
+		/>
 		<StackPanel
 			Grid.Row="0"
 			Grid.Column="0"
@@ -42,18 +57,214 @@
 				</MediaPlayerElement.TransportControls>
 			</MediaPlayerElement>
 
-			<TextBlock x:Name="position_label_element" Margin="10,10,0,0">再生位置：</TextBlock>
+			<TextBlock x:Name="position_label_element" Margin="10,10,0,0" FontFamily="メイリオ">再生位置：</TextBlock>
 
-			<Button x:Name="play_button" Click="play_button_Click">2秒前再生</Button>
+			<Button x:Name="play_button" Click="play_button_Click" FontFamily="メイリオ">2秒前再生</Button>
 		</StackPanel>
 
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="400"/>
-			<ColumnDefinition Width="*"/>
-		</Grid.ColumnDefinitions>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
+		<StackPanel
+			Grid.Row="0"
+			Grid.Column="1"
+			Orientation="Vertical"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Top"
+			Margin="10,0,0,0"
+		>
+			<ListView
+				x:Name="truck_list_view"
+				ItemsSource="{x:Bind truck_list}"
+				SelectionMode="None"
+			>
+				<ListView.HeaderTemplate>
+					<DataTemplate>
+						<Grid Height="50" Margin="0" Padding="16,0,0,0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="35"/>
+								<ColumnDefinition Width="440"/>
+								<ColumnDefinition Width="90"/>
+								<ColumnDefinition Width="90"/>
+								<ColumnDefinition Width="90"/>
+								<ColumnDefinition Width="60"/>
+								<ColumnDefinition Width="150"/>
+							</Grid.ColumnDefinitions>
 
+							<Border Grid.Row="0" Grid.Column="0" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+							<Border Grid.Row="0" Grid.Column="1" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+							<Border Grid.Row="0" Grid.Column="2" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+							<Border Grid.Row="0" Grid.Column="3" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+							<Border Grid.Row="0" Grid.Column="4" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+							<Border Grid.Row="0" Grid.Column="5" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+							<Border Grid.Row="0" Grid.Column="6" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+							<Border Grid.Row="0" Grid.Column="7" Background="white" BorderBrush="Black" BorderThickness="1,1,1,1"/>
+
+							<StackPanel Grid.Column="0" VerticalAlignment="Center">
+								<TextBlock></TextBlock>
+							</StackPanel>
+							<StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+								<TextBlock FontSize="16">ファイル名</TextBlock>
+							</StackPanel>
+							<StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
+								<TextBlock FontSize="16">A地点</TextBlock>
+							</StackPanel>
+							<StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="10,0,0,0">
+								<TextBlock FontSize="16">B地点</TextBlock>
+							</StackPanel>
+							<StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="10,0,0,0">
+								<TextBlock FontSize="16">A-B間<LineBreak />再生回数</TextBlock>
+							</StackPanel>
+							<StackPanel Grid.Column="5" VerticalAlignment="Center" Margin="10,0,0,0">
+								<TextBlock FontSize="16">Aから<LineBreak />再生</TextBlock>
+							</StackPanel>
+							<StackPanel Grid.Column="6" VerticalAlignment="Center" Orientation="Horizontal">
+								<TextBlock></TextBlock>
+							</StackPanel>
+						</Grid>
+					</DataTemplate>
+				</ListView.HeaderTemplate>
+				<ListView.ItemTemplate>
+					<DataTemplate x:DataType="local:Truck">
+						<Grid Height="40" Margin="0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="35"/>
+								<ColumnDefinition Width="440"/>
+								<ColumnDefinition Width="90"/>
+								<ColumnDefinition Width="90"/>
+								<ColumnDefinition Width="90"/>
+								<ColumnDefinition Width="60"/>
+								<ColumnDefinition Width="150"/>
+							</Grid.ColumnDefinitions>
+
+							<Border Grid.Row="0" Grid.Column="0" Background="white" BorderBrush="Black" BorderThickness="1,0,0,1"/>
+							<Border Grid.Row="0" Grid.Column="1" Background="white" BorderBrush="Black" BorderThickness="1,0,0,1"/>
+							<Border Grid.Row="0" Grid.Column="2" Background="white" BorderBrush="Black" BorderThickness="1,0,0,1"/>
+							<Border Grid.Row="0" Grid.Column="3" Background="white" BorderBrush="Black" BorderThickness="1,0,0,1"/>
+							<Border Grid.Row="0" Grid.Column="4" Background="white" BorderBrush="Black" BorderThickness="1,0,0,1"/>
+							<Border Grid.Row="0" Grid.Column="5" Background="white" BorderBrush="Black" BorderThickness="1,0,0,1"/>
+							<Border Grid.Row="0" Grid.Column="6" Background="white" BorderBrush="Black" BorderThickness="1,0,0,1"/>
+							<Border Grid.Row="0" Grid.Column="7" Background="white" BorderBrush="Black" BorderThickness="1,0,1,1"/>
+
+							<!--削除ボタン-->
+							<StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="3,0,0,0" Padding="0,0,0,0">
+								<!--
+								ボタンにマウスオーバーすると色が黒に戻ってしまうため、リソースを上書きして回避する。
+								https://github.com/microsoft/microsoft-ui-xaml/issues/5717
+								-->
+								<StackPanel.Resources>
+									<SolidColorBrush x:Key="ButtonForeground" Color="red" />
+									<SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="red" />
+								</StackPanel.Resources>
+
+								<Button
+									x:Name="truck_delete_button"
+									VerticalAlignment="Center"
+									FontWeight="Bold"
+									FontSize="20"
+									Click="truck_delete_button_Click"
+									Foreground="red"
+								>
+									×
+									<Button.Style>
+										<Style TargetType="Button">
+											<Setter Property="Background" Value="White" />
+											<Setter Property="Padding" Value="5,-5,5,0" />
+											<Setter Property="BorderThickness" Value="2" />
+											<Setter Property="BorderBrush" Value="black" />
+										</Style>
+									</Button.Style>
+								</Button>
+							</StackPanel>
+
+							<!--ファイル名-->
+							<StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+								<TextBlock Text="{x:Bind name}" TextWrapping="NoWrap" FontFamily="メイリオ">
+								</TextBlock>
+							</StackPanel>
+
+							<!--A地点-->
+							<StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="10,0,10,0">
+								<TextBox
+									x:Name="position_a"
+									Text="{x:Bind position_a}"
+								>
+								</TextBox>
+							</StackPanel>
+
+							<!--B地点-->
+							<StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="10,0,10,0">
+								<TextBox
+									x:Name="position_b"
+									Text="{x:Bind position_b}"
+								>
+								</TextBox>
+							</StackPanel>
+
+							<!--A-B間再生回数-->
+							<StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="10,0,10,0">
+								<TextBox
+									x:Name="ab_repeat_num"
+									Text="{x:Bind ab_repeat_num}"
+								>
+								</TextBox>
+							</StackPanel>
+
+							<!--Aから再生-->
+							<StackPanel Grid.Column="5" VerticalAlignment="Center" Margin="20,0,0,0">
+								<CheckBox
+									x:Name="is_start_position_a"
+									IsChecked="{x:Bind is_start_position_a}"
+								>
+								</CheckBox>
+							</StackPanel>
+
+							<!--ボタンエリア-->
+							<StackPanel Grid.Column="6" VerticalAlignment="Center" Orientation="Horizontal">
+								<Button
+									x:Name="truck_play_button"
+									Width="30"
+									Height="30"
+									FontFamily="メイリオ"
+									Click="truck_play_button_Click"
+								>
+									〓
+									<Button.RenderTransform>
+										<RotateTransform Angle="90" />
+									</Button.RenderTransform>
+									<Button.Style>
+										<Style TargetType="Button">
+											<Setter Property="Background" Value="White" />
+											<Setter Property="Margin" Value="10,0,0,0" />
+											<Setter Property="Padding" Value="5,0,5,0" />
+											<Setter Property="CornerRadius" Value="5" />
+											<Setter Property="BorderThickness" Value="2" />
+											<Setter Property="BorderBrush" Value="black" />
+											<Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+										</Style>
+									</Button.Style>
+								</Button>
+								<Button
+									x:Name="truck_position_check_button"
+									FontFamily="メイリオ"
+									Click="truck_position_check_button_Click"
+								>
+									▶B2秒前
+									<Button.Style>
+										<Style TargetType="Button">
+											<Setter Property="Background" Value="White" />
+											<Setter Property="Margin" Value="15,0,0,0" />
+											<Setter Property="Padding" Value="4,3,4,3" />
+											<Setter Property="CornerRadius" Value="5" />
+											<Setter Property="BorderThickness" Value="2" />
+											<Setter Property="BorderBrush" Value="black" />
+										</Style>
+									</Button.Style>
+								</Button>
+							</StackPanel>
+						</Grid>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
+
+
+		</StackPanel>
 	</Grid>
 </Window>

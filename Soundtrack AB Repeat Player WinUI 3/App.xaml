@@ -11,6 +11,19 @@
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
-        </ResourceDictionary>
+
+			<Style TargetType="TextBlock">
+				<Setter Property="FontFamily" Value="メイリオ" />
+			</Style>
+			<Style TargetType="Button">
+				<Setter Property="FontFamily" Value="メイリオ" />
+			</Style>
+			<Style TargetType="ListView">
+				<Setter Property="FontFamily" Value="メイリオ" />
+			</Style>
+			<Style TargetType="TextBox">
+				<Setter Property="FontFamily" Value="メイリオ" />
+			</Style>
+		</ResourceDictionary>
     </Application.Resources>
 </Application>
