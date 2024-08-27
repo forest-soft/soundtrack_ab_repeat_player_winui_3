@@ -1,3 +1,4 @@
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Automation.Provider;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics;
 using Windows.Media.Core;
 using Windows.Media.Playback;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -51,28 +53,7 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 		{
 			this.InitializeComponent();
 
-			//mediaPlayerElement.Source = MediaSource.CreateFromUri(new Uri("file://C:/xxx/14-行く手を阻む者たち.wma"));
-
 			mediaPlayerElement.MediaPlayer.IsLoopingEnabled = true;
-
-			/*
-			mediaPlayerElement.MediaPlayer.PlaybackSession.PlaybackStateChanged += xxx;
-			void xxx(MediaPlaybackSession sender, object e)
-			{
-				if (this.current_truck_index != null)
-				{
-					// ここで「System.Runtime.InteropServices.COMException」が起きる。
-					ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
-					// Button truck_play_button = (Button)this.GetElementByName(list_row_element, "truck_play_button");
-					// truck_play_button.RenderTransform
-				}
-					string aaa = "";
-				if (sender.PlaybackState == MediaPlaybackState.Playing)
-				{
-					
-				}
-			}
-			*/
 
 			DispatcherTimer dispatcherTimer = new DispatcherTimer();
 			dispatcherTimer.Tick += dispatcherTimer_Tick;
@@ -101,7 +82,36 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 				}
 			}
 
+			AppWindow.Changed += window_change_event;
+			void window_change_event(AppWindow sender, AppWindowChangedEventArgs args)
+			{
+				if (AppWindow.IsVisible && args.DidSizeChange)
+				{
+					/*
+					ウインドウサイズの最小サイズキープ処理
+					リサイズ時にチラついちゃうのでいったん無しにしとく。
+					*/
+					/*
+					if (AppWindow.Size.Height < 100 || AppWindow.Size.Width < 1440)
+					{
+						SizeInt32 new_size = AppWindow.Size;
+						new_size.Height = new_size.Height < 100 ? 100 : new_size.Height;
+						new_size.Width = new_size.Width < 1440 ? 1440 : new_size.Width;
+						AppWindow.Resize(new_size);
+					}
+					else
+					{
+						this.SetElementSize();
+					}
+					*/
 
+					this.SetElementSize();
+				}
+			}
+			SetElementSize();
+
+
+			// DEBUG
 			Truck truck_data = new Truck();
 			truck_data.filepath = "C:/xxx/14-行く手を阻む者たち.wma";
 			truck_data.name = "14-行く手を阻む者たち.wma";
@@ -132,13 +142,38 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 
 		}
 
+		private void SetElementSize()
+		{
+			double height = AppWindow.Size.Height - truck_list_view_header.Height - 50;
+			if (height < 0)
+			{
+				height = 0;
+			}
+			truck_list_view.Height = height;
+		}
+
 		// トラックリストの×ボタンクリック時の処理
 		private void truck_delete_button_Click(object sender, RoutedEventArgs e)
 		{
-			int? click_index = this.GetTruckListIndex((Button)sender);
-			if (click_index != null)
+			int? truck_index = this.GetTruckListIndex((Button)sender);
+			if (truck_index != null)
 			{
-				truck_list.RemoveAt((int)click_index);
+				if (this.current_truck_index == truck_index)
+				{
+					mediaPlayerElement.MediaPlayer.Pause();
+					mediaPlayerElement.Source = null;
+
+					position_a_label_element.Text = $"A地点：";
+					position_b_label_element.Text = $"B地点：";
+
+					this.current_truck_index = null;
+				}
+
+				truck_list.RemoveAt((int)truck_index);
+				if (truck_index < this.current_truck_index)
+				{
+					this.current_truck_index--;
+				}
 			}
 		}
 
@@ -394,6 +429,16 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			return null;
 		}
 
-
+		private void temp_button_Click(object sender, RoutedEventArgs e)
+		{
+			Truck truck_data = new Truck();
+			truck_data.filepath = "C:/xxx/10-スペルビア帝国 ～赤土を駆け抜けて～.wma";
+			truck_data.name = "10-スペルビア帝国 ～赤土を駆け抜けて～.wma";
+			truck_data.position_a = "";
+			truck_data.position_b = "";
+			truck_data.ab_repeat_num = "";
+			truck_data.is_start_position_a = false;
+			truck_list.Add(truck_data);
+		}
 	}
 }

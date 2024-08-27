@@ -59,6 +59,8 @@
 			<TextBlock x:Name="position_label_element" Margin="10,10,0,0" FontFamily="メイリオ">再生位置：</TextBlock>
 			<TextBlock x:Name="position_a_label_element" Margin="10,10,0,0" FontFamily="メイリオ">A地点：</TextBlock>
 			<TextBlock x:Name="position_b_label_element" Margin="10,10,0,0" FontFamily="メイリオ">B地点：</TextBlock>
+
+			<Button x:Name="temp_button" Click="temp_button_Click">追加</Button>
 		</StackPanel>
 
 		<StackPanel
@@ -69,58 +71,67 @@
 			VerticalAlignment="Top"
 			Margin="-5,0,0,0"
 		>
+			<Grid
+				x:Name="truck_list_view_header"
+				Height="50"
+				Margin="0"
+				Padding="16,0,0,0"
+			>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="35"/>
+					<ColumnDefinition Width="430"/>
+					<ColumnDefinition Width="120"/>
+					<ColumnDefinition Width="120"/>
+					<ColumnDefinition Width="90"/>
+					<ColumnDefinition Width="60"/>
+					<ColumnDefinition Width="130"/>
+				</Grid.ColumnDefinitions>
+
+				<Border Grid.Row="0" Grid.Column="0" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+				<Border Grid.Row="0" Grid.Column="1" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+				<Border Grid.Row="0" Grid.Column="2" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+				<Border Grid.Row="0" Grid.Column="3" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+				<Border Grid.Row="0" Grid.Column="4" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+				<Border Grid.Row="0" Grid.Column="5" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+				<Border Grid.Row="0" Grid.Column="6" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
+				<Border Grid.Row="0" Grid.Column="7" Background="white" BorderBrush="Black" BorderThickness="1,1,1,1"/>
+
+				<StackPanel Grid.Column="0" VerticalAlignment="Center">
+					<TextBlock></TextBlock>
+				</StackPanel>
+				<StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
+					<TextBlock FontSize="16">ファイル名</TextBlock>
+				</StackPanel>
+				<StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
+					<TextBlock FontSize="16">A地点</TextBlock>
+				</StackPanel>
+				<StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="10,0,0,0">
+					<TextBlock FontSize="16">B地点</TextBlock>
+				</StackPanel>
+				<StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="10,0,0,0">
+					<TextBlock FontSize="16">A-B間<LineBreak />再生回数</TextBlock>
+				</StackPanel>
+				<StackPanel Grid.Column="5" VerticalAlignment="Center" Margin="10,0,0,0">
+					<TextBlock FontSize="16">Aから<LineBreak />再生</TextBlock>
+				</StackPanel>
+				<StackPanel Grid.Column="6" VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock></TextBlock>
+				</StackPanel>
+			</Grid>
+
 			<ListView
 				x:Name="truck_list_view"
 				ItemsSource="{x:Bind truck_list}"
 				SelectionMode="None"
 				Margin="0,0,0,0"
 			>
+				<!--ヘッダーと一緒にスクロールしちゃうので、ヘッダーの中身は外側に定義する。-->
+				<!--
 				<ListView.HeaderTemplate>
 					<DataTemplate>
-						<Grid Height="50" Margin="0" Padding="16,0,0,0">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="35"/>
-								<ColumnDefinition Width="430"/>
-								<ColumnDefinition Width="120"/>
-								<ColumnDefinition Width="120"/>
-								<ColumnDefinition Width="90"/>
-								<ColumnDefinition Width="60"/>
-								<ColumnDefinition Width="130"/>
-							</Grid.ColumnDefinitions>
-
-							<Border Grid.Row="0" Grid.Column="0" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
-							<Border Grid.Row="0" Grid.Column="1" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
-							<Border Grid.Row="0" Grid.Column="2" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
-							<Border Grid.Row="0" Grid.Column="3" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
-							<Border Grid.Row="0" Grid.Column="4" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
-							<Border Grid.Row="0" Grid.Column="5" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
-							<Border Grid.Row="0" Grid.Column="6" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
-							<Border Grid.Row="0" Grid.Column="7" Background="white" BorderBrush="Black" BorderThickness="1,1,1,1"/>
-
-							<StackPanel Grid.Column="0" VerticalAlignment="Center">
-								<TextBlock></TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
-								<TextBlock FontSize="16">ファイル名</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
-								<TextBlock FontSize="16">A地点</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="10,0,0,0">
-								<TextBlock FontSize="16">B地点</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="10,0,0,0">
-								<TextBlock FontSize="16">A-B間<LineBreak />再生回数</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Column="5" VerticalAlignment="Center" Margin="10,0,0,0">
-								<TextBlock FontSize="16">Aから<LineBreak />再生</TextBlock>
-							</StackPanel>
-							<StackPanel Grid.Column="6" VerticalAlignment="Center" Orientation="Horizontal">
-								<TextBlock></TextBlock>
-							</StackPanel>
-						</Grid>
 					</DataTemplate>
 				</ListView.HeaderTemplate>
+				-->
 				<ListView.ItemTemplate>
 					<DataTemplate x:DataType="local:Truck">
 						<Grid Height="40" Margin="0">
@@ -330,7 +341,6 @@
 					</DataTemplate>
 				</ListView.ItemTemplate>
 			</ListView>
-
 
 		</StackPanel>
 	</Grid>
