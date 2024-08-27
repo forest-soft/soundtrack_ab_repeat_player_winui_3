@@ -1,4 +1,6 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation.Peers;
+using Microsoft.UI.Xaml.Automation.Provider;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -42,6 +44,9 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 		private ObservableCollection<Truck> truck_list = new ObservableCollection<Truck>();
 		private int? current_truck_index = null;
 
+		private static string PLAY_BUTTON_LABEL_PLAY = "▲";
+		private static string PLAY_BUTTON_LABEL_STOP = "〓";
+
 		public MainWindow()
 		{
 			this.InitializeComponent();
@@ -49,6 +54,25 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			//mediaPlayerElement.Source = MediaSource.CreateFromUri(new Uri("file://C:/xxx/14-行く手を阻む者たち.wma"));
 
 			mediaPlayerElement.MediaPlayer.IsLoopingEnabled = true;
+
+			/*
+			mediaPlayerElement.MediaPlayer.PlaybackSession.PlaybackStateChanged += xxx;
+			void xxx(MediaPlaybackSession sender, object e)
+			{
+				if (this.current_truck_index != null)
+				{
+					// ここで「System.Runtime.InteropServices.COMException」が起きる。
+					ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
+					// Button truck_play_button = (Button)this.GetElementByName(list_row_element, "truck_play_button");
+					// truck_play_button.RenderTransform
+				}
+					string aaa = "";
+				if (sender.PlaybackState == MediaPlaybackState.Playing)
+				{
+					
+				}
+			}
+			*/
 
 			DispatcherTimer dispatcherTimer = new DispatcherTimer();
 			dispatcherTimer.Tick += dispatcherTimer_Tick;
@@ -58,7 +82,7 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			void dispatcherTimer_Tick(object sender, object e)
 			{
 				TimeSpan position = mediaPlayerElement.MediaPlayer.PlaybackSession.Position;
-				position_label_element.Text = $"位置：{position.TotalSeconds}";
+				position_label_element.Text = $"再生位置：{position.TotalSeconds}";
 
 				if (this.current_truck_index != null)
 				{
@@ -71,6 +95,9 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 						mediaPlayerElement.MediaPlayer.PlaybackSession.Position = TimeSpan.FromSeconds(Convert.ToDouble(current_truck_data.position_a));
 						// mediaPlayerElement.MediaPlayer.Pause();
 					}
+
+					// トラックリストの再生ボタンの状態を切り替える。
+					this.SetTruckPlayButtonLabel();
 				}
 			}
 
@@ -93,12 +120,16 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			truck_data.is_start_position_a = false;
 			truck_list.Add(truck_data);
 
-		}
+			truck_data = new Truck();
+			truck_data.filepath = "C:/xxx/07-タルタル山脈 (後半 Ver_).wma";
+			truck_data.name = "07-タルタル山脈 (後半 Ver_).wma";
+			truck_data.position_a = "161.21";
+			truck_data.position_b = "305.87";
+			truck_data.ab_repeat_num = "";
+			truck_data.is_start_position_a = false;
+			truck_list.Add(truck_data);
+			
 
-		private void play_button_Click(object sender, RoutedEventArgs e)
-		{
-			mediaPlayerElement.MediaPlayer.PlaybackSession.Position = TimeSpan.FromSeconds(200.19 - 2);
-			mediaPlayerElement.MediaPlayer.Play();
 		}
 
 		// トラックリストの×ボタンクリック時の処理
@@ -111,14 +142,121 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			}
 		}
 
+		// トラックリストのA地点の増加ボタンクリック時の処理
+		private void increment_position_a_button_Click(object sender, RoutedEventArgs e)
+		{
+			int? truck_index = this.GetTruckListIndex((Button)sender);
+			if (truck_index != null)
+			{
+				this.current_truck_index = truck_index;
+
+				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
+
+				NumberBox position_a_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_a");
+				double position_value = Convert.ToDouble(position_a_textbox.Text) + 0.01;
+				position_a_textbox.Text = position_value.ToString("0.00");
+
+				// B直前再生ボタンをクリックして再生させる。
+				Button truck_position_check_button = (Button)this.GetElementByName(list_row_element, "truck_position_check_button");
+				ButtonAutomationPeer peer = new ButtonAutomationPeer(truck_position_check_button);
+				IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+				invokeProv.Invoke();
+			}
+		}
+
+		// トラックリストのA地点の減少ボタンクリック時の処理
+		private void decrement_position_a_button_Click(object sender, RoutedEventArgs e)
+		{
+			int? truck_index = this.GetTruckListIndex((Button)sender);
+			if (truck_index != null)
+			{
+				this.current_truck_index = truck_index;
+
+				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
+
+				NumberBox position_a_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_a");
+				double position_value = Convert.ToDouble(position_a_textbox.Text) - 0.01;
+				if (position_value <= 0)
+				{
+					position_value = 0;
+				}
+				position_a_textbox.Text = position_value.ToString("0.00");
+
+				// B直前再生ボタンをクリックして再生させる。
+				Button truck_position_check_button = (Button)this.GetElementByName(list_row_element, "truck_position_check_button");
+				ButtonAutomationPeer peer = new ButtonAutomationPeer(truck_position_check_button);
+				IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+				invokeProv.Invoke();
+			}
+		}
+
+		// トラックリストのB地点の増加ボタンクリック時の処理
+		private void increment_position_b_button_Click(object sender, RoutedEventArgs e)
+		{
+			int? truck_index = this.GetTruckListIndex((Button)sender);
+			if (truck_index != null)
+			{
+				this.current_truck_index = truck_index;
+
+				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
+
+				NumberBox position_b_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_b");
+				double position_value = Convert.ToDouble(position_b_textbox.Text) + 0.01;
+				position_b_textbox.Text = position_value.ToString("0.00");
+
+				// B直前再生ボタンをクリックして再生させる。
+				Button truck_position_check_button = (Button)this.GetElementByName(list_row_element, "truck_position_check_button");
+				ButtonAutomationPeer peer = new ButtonAutomationPeer(truck_position_check_button);
+				IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+				invokeProv.Invoke();
+			}
+		}
+
+		// トラックリストのB地点の減少ボタンクリック時の処理
+		private void decrement_position_b_button_Click(object sender, RoutedEventArgs e)
+		{
+			int? truck_index = this.GetTruckListIndex((Button)sender);
+			if (truck_index != null)
+			{
+				this.current_truck_index = truck_index;
+
+				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
+
+				NumberBox position_b_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_b");
+				double position_value = Convert.ToDouble(position_b_textbox.Text) - 0.01;
+				if (position_value <= 0)
+				{
+					position_value = 0;
+				}
+				position_b_textbox.Text = position_value.ToString("0.00");
+
+				// B直前再生ボタンをクリックして再生させる。
+				Button truck_position_check_button = (Button)this.GetElementByName(list_row_element, "truck_position_check_button");
+				ButtonAutomationPeer peer = new ButtonAutomationPeer(truck_position_check_button);
+				IInvokeProvider invokeProv = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+				invokeProv.Invoke();
+			}
+		}
+
 		// トラックリストの再生ボタンクリック時の処理
 		private void truck_play_button_Click(object sender, RoutedEventArgs e)
 		{
 			int? truck_index = this.GetTruckListIndex((Button)sender);
 			if (truck_index != null)
 			{
-				this.current_truck_index = truck_index;
-				this.PlayTruck(null);
+				if (this.current_truck_index == truck_index &&
+					mediaPlayerElement.MediaPlayer.PlaybackSession.PlaybackState == MediaPlaybackState.Playing)
+				{
+					mediaPlayerElement.MediaPlayer.Pause();
+				}
+				else
+				{
+					mediaPlayerElement.MediaPlayer.Pause();
+					this.SetTruckPlayButtonLabel();
+					
+					this.current_truck_index = truck_index;
+					this.PlayTruck(null);
+				}
 			}
 		}
 
@@ -128,6 +266,9 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			int? truck_index = this.GetTruckListIndex((Button)sender);
 			if (truck_index != null)
 			{
+				mediaPlayerElement.MediaPlayer.Pause();
+				this.SetTruckPlayButtonLabel();
+
 				this.current_truck_index = truck_index;
 				Truck current_truck_data = truck_list[(int)this.current_truck_index];
 
@@ -136,24 +277,20 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			}
 		}
 
+		// トラックの再生処理
 		private void PlayTruck(double? position)
 		{
-			// Todo フォーカスを外さずに再生ボタンを押すとA地点、B地点の値が取れない。
-
 			if (this.current_truck_index != null)
 			{
-				// Todo A地点、B地点、A-B間再生回数の入力チェック(フォーカス外したときの方が良いか？)
-
-
 				Truck current_truck_data = truck_list[(int)this.current_truck_index];
 
 				// truck_listのデータに入力値を反映させる。
 				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
 
-				TextBox position_a_textbox = (TextBox)this.GetElementByName(list_row_element, "position_a");
+				NumberBox position_a_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_a");
 				current_truck_data.position_a = position_a_textbox.Text;
 
-				TextBox position_b_textbox = (TextBox)this.GetElementByName(list_row_element, "position_b");
+				NumberBox position_b_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_b");
 				current_truck_data.position_b = position_b_textbox.Text;
 
 
@@ -171,6 +308,45 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 				}
 
 				mediaPlayerElement.MediaPlayer.Play();
+
+				// 再生情報欄の情報を設定する。
+
+				// A地点
+				string position_a_text = current_truck_data.position_a.ToString();
+				if (position_a_text == "")
+				{
+					position_a_text = "なし";
+				}
+				position_a_label_element.Text = $"A地点：{position_a_text}";
+
+				// B地点
+				string position_b_text = current_truck_data.position_b.ToString();
+				if (position_b_text == "")
+				{
+					position_b_text = "なし";
+				}
+				position_b_label_element.Text = $"B地点：{position_b_text}";
+
+			}
+		}
+
+		// トラックリストの再生ボタンの状態を設定する。
+		private void SetTruckPlayButtonLabel()
+		{
+			if (this.current_truck_index != null)
+			{
+				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
+				Button truck_play_button = (Button)this.GetElementByName(list_row_element, "truck_play_button");
+				if (mediaPlayerElement.MediaPlayer.PlaybackSession.PlaybackState == MediaPlaybackState.Playing &&
+					truck_play_button.Content.ToString() == PLAY_BUTTON_LABEL_PLAY)
+				{
+					truck_play_button.Content = PLAY_BUTTON_LABEL_STOP;
+				}
+				else if (mediaPlayerElement.MediaPlayer.PlaybackSession.PlaybackState != MediaPlaybackState.Playing &&
+					truck_play_button.Content.ToString() == PLAY_BUTTON_LABEL_STOP)
+				{
+					truck_play_button.Content = PLAY_BUTTON_LABEL_PLAY;
+				}
 			}
 		}
 

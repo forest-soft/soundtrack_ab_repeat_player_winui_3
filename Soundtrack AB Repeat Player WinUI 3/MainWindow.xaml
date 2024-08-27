@@ -38,7 +38,6 @@
 				x:Name="mediaPlayerElement"
 				AutoPlay="False"
 				AreTransportControlsEnabled="True"
-				
 				Width="400"
 				Height="319"
 				HighContrastAdjustment="Auto"
@@ -58,8 +57,8 @@
 			</MediaPlayerElement>
 
 			<TextBlock x:Name="position_label_element" Margin="10,10,0,0" FontFamily="メイリオ">再生位置：</TextBlock>
-
-			<Button x:Name="play_button" Click="play_button_Click" FontFamily="メイリオ">2秒前再生</Button>
+			<TextBlock x:Name="position_a_label_element" Margin="10,10,0,0" FontFamily="メイリオ">A地点：</TextBlock>
+			<TextBlock x:Name="position_b_label_element" Margin="10,10,0,0" FontFamily="メイリオ">B地点：</TextBlock>
 		</StackPanel>
 
 		<StackPanel
@@ -68,24 +67,25 @@
 			Orientation="Vertical"
 			HorizontalAlignment="Left"
 			VerticalAlignment="Top"
-			Margin="10,0,0,0"
+			Margin="-5,0,0,0"
 		>
 			<ListView
 				x:Name="truck_list_view"
 				ItemsSource="{x:Bind truck_list}"
 				SelectionMode="None"
+				Margin="0,0,0,0"
 			>
 				<ListView.HeaderTemplate>
 					<DataTemplate>
 						<Grid Height="50" Margin="0" Padding="16,0,0,0">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="35"/>
-								<ColumnDefinition Width="440"/>
-								<ColumnDefinition Width="90"/>
-								<ColumnDefinition Width="90"/>
+								<ColumnDefinition Width="430"/>
+								<ColumnDefinition Width="120"/>
+								<ColumnDefinition Width="120"/>
 								<ColumnDefinition Width="90"/>
 								<ColumnDefinition Width="60"/>
-								<ColumnDefinition Width="150"/>
+								<ColumnDefinition Width="130"/>
 							</Grid.ColumnDefinitions>
 
 							<Border Grid.Row="0" Grid.Column="0" Background="white" BorderBrush="Black" BorderThickness="1,1,0,1"/>
@@ -126,12 +126,12 @@
 						<Grid Height="40" Margin="0">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="35"/>
-								<ColumnDefinition Width="440"/>
-								<ColumnDefinition Width="90"/>
-								<ColumnDefinition Width="90"/>
+								<ColumnDefinition Width="430"/>
+								<ColumnDefinition Width="120"/>
+								<ColumnDefinition Width="120"/>
 								<ColumnDefinition Width="90"/>
 								<ColumnDefinition Width="60"/>
-								<ColumnDefinition Width="150"/>
+								<ColumnDefinition Width="130"/>
 							</Grid.ColumnDefinitions>
 
 							<Border Grid.Row="0" Grid.Column="0" Background="white" BorderBrush="Black" BorderThickness="1,0,0,1"/>
@@ -181,31 +181,97 @@
 							</StackPanel>
 
 							<!--A地点-->
-							<StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="10,0,10,0">
-								<TextBox
+							<StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="10,0,10,0" Orientation="Horizontal">
+								<!--「×」ボタンが表示されないギリギリのサイズにする。-->
+								<NumberBox
 									x:Name="position_a"
 									Text="{x:Bind position_a}"
+									Width="70"
+									Minimum="0"
 								>
-								</TextBox>
+								</NumberBox>
+								<StackPanel VerticalAlignment="Center" Margin="5,0,10,0" Orientation="Vertical">
+									<Button
+										x:Name="increment_position_a_button"
+										Click="increment_position_a_button_Click"
+									>
+										▲
+										<Button.Style>
+											<Style TargetType="Button">
+												<Setter Property="Background" Value="White" />
+												<Setter Property="Padding" Value="5,-3,5,-2" />
+												<Setter Property="BorderThickness" Value="1" />
+												<Setter Property="BorderBrush" Value="Gray" />
+											</Style>
+										</Button.Style>
+									</Button>
+									<Button
+										x:Name="decrement_position_a_button"
+										Click="decrement_position_a_button_Click"
+									>
+										▼
+										<Button.Style>
+											<Style TargetType="Button">
+												<Setter Property="Background" Value="White" />
+												<Setter Property="Padding" Value="5,-3,5,-2" />
+												<Setter Property="BorderThickness" Value="1" />
+												<Setter Property="BorderBrush" Value="Gray" />
+											</Style>
+										</Button.Style>
+									</Button>
+								</StackPanel>
 							</StackPanel>
 
 							<!--B地点-->
-							<StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="10,0,10,0">
-								<TextBox
+							<StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="10,0,10,0" Orientation="Horizontal">
+								<!--「×」ボタンが表示されないギリギリのサイズにする。-->
+								<NumberBox
 									x:Name="position_b"
 									Text="{x:Bind position_b}"
-									Tag="position_b"
+									Width="70"
+									Minimum="0"
 								>
-								</TextBox>
+								</NumberBox>
+								<StackPanel VerticalAlignment="Center" Margin="5,0,10,0" Orientation="Vertical">
+									<Button
+										x:Name="increment_position_b_button"
+										Click="increment_position_b_button_Click"
+									>
+										▲
+										<Button.Style>
+											<Style TargetType="Button">
+												<Setter Property="Background" Value="White" />
+												<Setter Property="Padding" Value="5,-3,5,-2" />
+												<Setter Property="BorderThickness" Value="1" />
+												<Setter Property="BorderBrush" Value="Gray" />
+											</Style>
+										</Button.Style>
+									</Button>
+									<Button
+										x:Name="decrement_position_b_button"
+										Click="decrement_position_b_button_Click"
+									>
+										▼
+										<Button.Style>
+											<Style TargetType="Button">
+												<Setter Property="Background" Value="White" />
+												<Setter Property="Padding" Value="5,-3,5,-2" />
+												<Setter Property="BorderThickness" Value="1" />
+												<Setter Property="BorderBrush" Value="Gray" />
+											</Style>
+										</Button.Style>
+									</Button>
+								</StackPanel>
 							</StackPanel>
 
 							<!--A-B間再生回数-->
 							<StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="10,0,10,0">
-								<TextBox
+								<NumberBox
 									x:Name="ab_repeat_num"
 									Text="{x:Bind ab_repeat_num}"
+									Minimum="0"
 								>
-								</TextBox>
+								</NumberBox>
 							</StackPanel>
 
 							<!--Aから再生-->
@@ -226,7 +292,7 @@
 									FontFamily="メイリオ"
 									Click="truck_play_button_Click"
 								>
-									〓
+									▲
 									<Button.RenderTransform>
 										<RotateTransform Angle="90" />
 									</Button.RenderTransform>

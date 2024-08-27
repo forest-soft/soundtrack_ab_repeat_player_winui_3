@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
@@ -14,6 +14,7 @@
     <PackageCertificateThumbprint>EEFD2D7297BDA73761374A692FB11119D5CC2093</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>Soundtrack AB Repeat Player WinUI 3_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <BaseOutputPath>C:\work\data\VisualStudioOutput\SABRP WinUI3</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
