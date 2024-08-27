@@ -11,14 +11,19 @@ using Microsoft.UI.Xaml.Navigation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Globalization.NumberFormatting;
 using Windows.Graphics;
 using Windows.Media.Core;
 using Windows.Media.Playback;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -138,18 +143,51 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 			truck_data.ab_repeat_num = "";
 			truck_data.is_start_position_a = false;
 			truck_list.Add(truck_data);
-			
+
+			truck_data = new Truck();
+			truck_data.filepath = "C:/xxx/10-スペルビア帝国 ～赤土を駆け抜けて～.wma";
+			truck_data.name = "10-スペルビア帝国 ～赤土を駆け抜けて～.wma";
+			truck_data.position_a = "13.01";
+			truck_data.position_b = "171.91";
+			truck_data.ab_repeat_num = "";
+			truck_data.is_start_position_a = false;
+			truck_list.Add(truck_data);
 
 		}
 
 		private void SetElementSize()
 		{
-			double height = AppWindow.Size.Height - truck_list_view_header.Height - 50;
+			double height = AppWindow.Size.Height - option_area.Height - truck_list_view_header.Height - 70;
 			if (height < 0)
 			{
 				height = 0;
 			}
 			truck_list_view.Height = height;
+		}
+
+		// トラック読み込みボタンクリック時の処理
+		private async void add_truck_button_Click(object sender, RoutedEventArgs e)
+		{
+			FileOpenPicker picker = new Windows.Storage.Pickers.FileOpenPicker();
+			// picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.List;
+			// picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+			picker.FileTypeFilter.Add("*");
+
+			var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+			WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+
+			var files = await picker.PickMultipleFilesAsync();
+			foreach (Windows.Storage.StorageFile file in files)
+			{
+				Truck truck_data = new Truck();
+				truck_data.filepath = file.Path;
+				truck_data.name = file.Name;
+				truck_data.position_a = "";
+				truck_data.position_b = "";
+				truck_data.ab_repeat_num = "";
+				truck_data.is_start_position_a = false;
+				truck_list.Add(truck_data);
+			}
 		}
 
 		// トラックリストの×ボタンクリック時の処理
@@ -163,6 +201,7 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 					mediaPlayerElement.MediaPlayer.Pause();
 					mediaPlayerElement.Source = null;
 
+					truck_name.Text = $"ファイル名：";
 					position_a_label_element.Text = $"A地点：";
 					position_b_label_element.Text = $"B地点：";
 
@@ -187,7 +226,7 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 
 				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
 
-				NumberBox position_a_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_a");
+				TextBox position_a_textbox = (TextBox)this.GetElementByName(list_row_element, "position_a");
 				double position_value = Convert.ToDouble(position_a_textbox.Text) + 0.01;
 				position_a_textbox.Text = position_value.ToString("0.00");
 
@@ -209,7 +248,7 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 
 				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
 
-				NumberBox position_a_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_a");
+				TextBox position_a_textbox = (TextBox)this.GetElementByName(list_row_element, "position_a");
 				double position_value = Convert.ToDouble(position_a_textbox.Text) - 0.01;
 				if (position_value <= 0)
 				{
@@ -235,7 +274,7 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 
 				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
 
-				NumberBox position_b_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_b");
+				TextBox position_b_textbox = (TextBox)this.GetElementByName(list_row_element, "position_b");
 				double position_value = Convert.ToDouble(position_b_textbox.Text) + 0.01;
 				position_b_textbox.Text = position_value.ToString("0.00");
 
@@ -257,7 +296,7 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 
 				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
 
-				NumberBox position_b_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_b");
+				TextBox position_b_textbox = (TextBox)this.GetElementByName(list_row_element, "position_b");
 				double position_value = Convert.ToDouble(position_b_textbox.Text) - 0.01;
 				if (position_value <= 0)
 				{
@@ -305,10 +344,15 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 				this.SetTruckPlayButtonLabel();
 
 				this.current_truck_index = truck_index;
-				Truck current_truck_data = truck_list[(int)this.current_truck_index];
 
-				// 1秒マイナスすると2秒前くらいから再生される。
-				this.PlayTruck(Convert.ToDouble(current_truck_data.position_b) - 1);
+				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
+				TextBox position_b_textbox = (TextBox)this.GetElementByName(list_row_element, "position_b");
+
+				if (position_b_textbox.Text != "")
+				{
+					// 1秒マイナスすると2秒前くらいから再生される。
+					this.PlayTruck(Convert.ToDouble(position_b_textbox.Text) - 1);
+				}
 			}
 		}
 
@@ -322,10 +366,10 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 				// truck_listのデータに入力値を反映させる。
 				ListViewItem list_row_element = (ListViewItem)truck_list_view.ContainerFromIndex((int)this.current_truck_index);
 
-				NumberBox position_a_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_a");
+				TextBox position_a_textbox = (TextBox)this.GetElementByName(list_row_element, "position_a");
 				current_truck_data.position_a = position_a_textbox.Text;
 
-				NumberBox position_b_textbox = (NumberBox)this.GetElementByName(list_row_element, "position_b");
+				TextBox position_b_textbox = (TextBox)this.GetElementByName(list_row_element, "position_b");
 				current_truck_data.position_b = position_b_textbox.Text;
 
 
@@ -345,6 +389,9 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 				mediaPlayerElement.MediaPlayer.Play();
 
 				// 再生情報欄の情報を設定する。
+
+				// ファイル名
+				truck_name.Text = $"ファイル名：{current_truck_data.name}";
 
 				// A地点
 				string position_a_text = current_truck_data.position_a.ToString();
@@ -431,14 +478,8 @@ namespace Soundtrack_AB_Repeat_Player_WinUI_3
 
 		private void temp_button_Click(object sender, RoutedEventArgs e)
 		{
-			Truck truck_data = new Truck();
-			truck_data.filepath = "C:/xxx/10-スペルビア帝国 ～赤土を駆け抜けて～.wma";
-			truck_data.name = "10-スペルビア帝国 ～赤土を駆け抜けて～.wma";
-			truck_data.position_a = "";
-			truck_data.position_b = "";
-			truck_data.ab_repeat_num = "";
-			truck_data.is_start_position_a = false;
-			truck_list.Add(truck_data);
+
 		}
+
 	}
 }

@@ -57,6 +57,7 @@
 			</MediaPlayerElement>
 
 			<TextBlock x:Name="position_label_element" Margin="10,10,0,0" FontFamily="メイリオ">再生位置：</TextBlock>
+			<TextBlock x:Name="truck_name" Margin="10,10,0,0" FontFamily="メイリオ">ファイル名：</TextBlock>
 			<TextBlock x:Name="position_a_label_element" Margin="10,10,0,0" FontFamily="メイリオ">A地点：</TextBlock>
 			<TextBlock x:Name="position_b_label_element" Margin="10,10,0,0" FontFamily="メイリオ">B地点：</TextBlock>
 
@@ -71,6 +72,42 @@
 			VerticalAlignment="Top"
 			Margin="-5,0,0,0"
 		>
+
+			<StackPanel
+				x:Name="option_area"
+				HorizontalAlignment="Left"
+				Orientation="Horizontal"
+				Margin="16,0,0,10"
+				Height="80"
+			>
+				<Border Background="white" BorderBrush="Black" BorderThickness="1,1,1,1" Padding="10,10,10,10">
+					<StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+							<TextBlock Margin="100,0,0,0">プレイリスト</TextBlock>
+						</StackPanel>
+						<StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Orientation="Horizontal">
+							<Button>読み込み</Button>
+							<TextBlock>タイトル：</TextBlock>
+							<TextBox Width="200"></TextBox>
+							<Button>保存</Button>
+						</StackPanel>
+					</StackPanel>
+				</Border>
+				<Border Background="white" BorderBrush="Black" BorderThickness="1,1,1,1" Margin="10,0,0,0" Padding="10,10,10,10">
+					<StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" Orientation="Vertical">
+						<TextBlock FontWeight="Bold">再生ファイル</TextBlock>
+						<Button
+							x:Name="add_truck_button"
+							Margin="0,0,0,0"
+							Click="add_truck_button_Click"
+						>
+							読み込み
+						</Button>
+					</StackPanel>
+				</Border>
+			</StackPanel>
+
+			<!--トラックリストのヘッダー-->
 			<Grid
 				x:Name="truck_list_view_header"
 				Height="50"
@@ -119,6 +156,7 @@
 				</StackPanel>
 			</Grid>
 
+			<!--トラックリスト-->
 			<ListView
 				x:Name="truck_list_view"
 				ItemsSource="{x:Bind truck_list}"
@@ -194,13 +232,14 @@
 							<!--A地点-->
 							<StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="10,0,10,0" Orientation="Horizontal">
 								<!--「×」ボタンが表示されないギリギリのサイズにする。-->
-								<NumberBox
+								<!--NumberBoxを使うと楽だが、小数点を含んだ値を入れるとうまく丸め込めずに表示されてしまうので使わない。(161.21 → 161.20999999999998)-->
+								<!--https://github.com/microsoft/microsoft-ui-xaml/issues/9826-->
+								<TextBox
 									x:Name="position_a"
 									Text="{x:Bind position_a}"
 									Width="70"
-									Minimum="0"
 								>
-								</NumberBox>
+								</TextBox>
 								<StackPanel VerticalAlignment="Center" Margin="5,0,10,0" Orientation="Vertical">
 									<Button
 										x:Name="increment_position_a_button"
@@ -236,13 +275,12 @@
 							<!--B地点-->
 							<StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="10,0,10,0" Orientation="Horizontal">
 								<!--「×」ボタンが表示されないギリギリのサイズにする。-->
-								<NumberBox
+								<TextBox
 									x:Name="position_b"
 									Text="{x:Bind position_b}"
 									Width="70"
-									Minimum="0"
 								>
-								</NumberBox>
+								</TextBox>
 								<StackPanel VerticalAlignment="Center" Margin="5,0,10,0" Orientation="Vertical">
 									<Button
 										x:Name="increment_position_b_button"
@@ -277,12 +315,11 @@
 
 							<!--A-B間再生回数-->
 							<StackPanel Grid.Column="4" VerticalAlignment="Center" Margin="10,0,10,0">
-								<NumberBox
+								<TextBox
 									x:Name="ab_repeat_num"
 									Text="{x:Bind ab_repeat_num}"
-									Minimum="0"
 								>
-								</NumberBox>
+								</TextBox>
 							</StackPanel>
 
 							<!--Aから再生-->
